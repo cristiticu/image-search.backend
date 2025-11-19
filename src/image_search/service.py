@@ -8,10 +8,10 @@ from utils.custom_search_service import custom_search_service
 class ImageSearchService():
     def __init__(self, persistence: ImageSearchPersistence):
         self._cached_image_searches = persistence
-        self.image_source = custom_search_service()
+        self._images_source = custom_search_service()
 
     def _fetch_images(self, query: str, exact_terms: str, start: int):
-        response = self.image_source.list(
+        response = self._images_source.list(
             q=query,
             searchType="image",
             cx=settings.CUSTOM_ENGINE_ID,
@@ -28,7 +28,7 @@ class ImageSearchService():
         query_hash = f"{normalized_query}|{normalized_exact_terms}"
 
         try:
-            cached_result = self._cached_image_searches.get_cache_document(
+            cached_result = self._cached_image_searches.get_image_search(
                 query_hash, start)
 
             return cached_result
@@ -45,6 +45,6 @@ class ImageSearchService():
                 fetched_images=fetched_images
             )
 
-            self._cached_image_searches.set_cache_document(new_image_search)
+            self._cached_image_searches.persist(new_image_search)
 
             return new_image_search

@@ -1,12 +1,9 @@
-from email.mime import image
 from exceptions import Error
-import image_search
 from utils.cosmos_client import cosmos_client
 import settings
 from image_search.model import ImageSearch
 from image_search.exceptions import ImageSearchNotFound
 from datetime import datetime,  timezone
-from typing import Dict
 from azure.cosmos.exceptions import CosmosHttpResponseError
 
 
@@ -27,7 +24,16 @@ class ImageSearchPersistence():
 
         return time_since_creation > document.ttl
 
-    def get_cache_document(self, query_hash: str, start: int) -> ImageSearch:
+    def persist(self, image_search: ImageSearch):
+        payload = image_search.to_db_item()
+
+        try:
+            self.container.upsert_item(body=payload)
+
+        except Exception as e:
+            raise Error(msg="Failed to upsert cache document")
+
+    def get_image_search(self, query_hash: str, start: int) -> ImageSearch:
         try:
             response = self.container.read_item(
                 item=str(start),
@@ -47,12 +53,3 @@ class ImageSearchPersistence():
             raise ImageSearchNotFound
 
         return image_search
-
-    def set_cache_document(self, document: ImageSearch):
-        payload = document.to_db_item()
-
-        try:
-            self.container.upsert_item(body=payload)
-
-        except Exception as e:
-            raise Error(msg="Failed to upsert cache document")

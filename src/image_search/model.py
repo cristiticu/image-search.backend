@@ -29,12 +29,10 @@ class ImageSearch(BaseModel):
         db_item = {
             "queryHash": self.query_hash,
             "id": str(self.start),
-
             "searchQuery": self.search_query,
             "exactTerms": self.exact_terms,
             "ttl": self.ttl,
             "createdAt": self.created_at.isoformat(),
-
             "results": results_list
         }
 
@@ -46,12 +44,10 @@ class ImageSearch(BaseModel):
         data_for_pydantic = {
             "query_hash": db_item["queryHash"],
             "start": int(db_item["id"]),
-
             "search_query": db_item["searchQuery"],
             "exact_terms": db_item["exactTerms"],
             "created_at": db_item["createdAt"],
             "ttl": db_item["ttl"],
-
             "results": db_item["results"]
         }
 
