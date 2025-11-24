@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from routers.image_search import router as image_search_router
-
 from exceptions import register_error_handlers
 import settings
 
